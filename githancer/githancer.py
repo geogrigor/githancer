@@ -25,12 +25,15 @@ def auto_stash():
 
 def apply_branch_stash(branch):
     stashes = run_git_command('git stash list')
-    stash_startswith = f'githancer-auto-stash {branch}'
     target_stash = None
 
     for stash in stashes.split('\n'):
-        if stash.startswith(stash_startswith):
-            target_stash = stash.split(':')[0]
+        stash_parts = stash.split(':')
+        stash_reference = stash_parts[0]
+        stash_branch = stash_parts[1].strip().split(' ')[1]
+        stash_name = stash_parts[2]
+        if stash_name.startswith('githancer-auto-stash') and stash_branch == branch:
+            target_stash = stash_reference
             break
 
     if target_stash is None:
