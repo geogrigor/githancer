@@ -3,7 +3,7 @@ import subprocess
 import datetime
 
 
-def run_git_command(command):
+def run_command(command):
     process = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
     output, error = process.communicate()
 
@@ -15,16 +15,16 @@ def run_git_command(command):
 
 def auto_stash():
     current_time = datetime.datetime.now().strftime('%H:%M:%S')
-    current_branch = run_git_command('git rev-parse --abbrev-ref HEAD')
+    current_branch = run_command('git rev-parse --abbrev-ref HEAD')
     stash_name = f'githancer-auto-stash {current_branch} {current_time}'
     git_command = f'git stash save {stash_name}'
-    output = run_git_command(git_command)
+    output = run_command(git_command)
 
     print(output)
 
 
 def apply_branch_stash(branch):
-    stashes = run_git_command('git stash list')
+    stashes = run_command('git stash list')
     target_stash = None
 
     for stash in stashes.split('\n'):
@@ -40,8 +40,8 @@ def apply_branch_stash(branch):
     if target_stash is None:
         return
 
-    stash_output = run_git_command('git stash apply {}'.format(target_stash))
-    drop_output = run_git_command('git stash drop {}'.format(target_stash))
+    stash_output = run_command('git stash apply {}'.format(target_stash))
+    drop_output = run_command('git stash drop {}'.format(target_stash))
 
     print(stash_output)
     print(drop_output)
@@ -49,7 +49,7 @@ def apply_branch_stash(branch):
 
 def checkout_branch(branch):
     git_command = f'git checkout {branch}'
-    output = run_git_command(git_command)
+    output = run_command(git_command)
 
     print(output)
 
