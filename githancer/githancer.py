@@ -31,7 +31,7 @@ def apply_branch_stash(branch):
         stash_parts = stash.split(':')
         stash_reference = stash_parts[0]
         stash_branch = stash_parts[1].strip().split(' ')[1]
-        stash_name = stash_parts[2]
+        stash_name = stash_parts[2].strip()
         if stash_name.startswith('githancer-auto-stash') and stash_branch == branch:
             target_stash = stash_reference
             break
