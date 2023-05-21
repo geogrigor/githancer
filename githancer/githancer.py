@@ -26,6 +26,7 @@ def auto_stash():
 def apply_branch_stash(branch):
     stashes = run_git_command('git stash list')
     stash_startswith = f'githancer-auto-stash {branch}'
+    target_stash = None
 
     for stash in stashes.split('\n'):
         if stash.startswith(stash_startswith):
