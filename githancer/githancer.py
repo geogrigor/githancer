@@ -1,5 +1,6 @@
 import argparse
 import subprocess
+import datetime
 
 
 def run_git_command(command):
@@ -9,13 +10,37 @@ def run_git_command(command):
     if error:
         raise Exception("Error occurred while executing command: ", error)
     else:
-        return output.decode("utf-8")
+        return output.decode("utf-8").strip()
+
+
+def auto_stash():
+    current_time = datetime.datetime.now().strftime("%H:%M:%S")
+    current_branch = run_git_command('git rev-parse --abbrev-ref HEAD')
+    stash_name = f'githancer-auto-stash {current_branch} {current_time}'
+    git_command = f'git stash save {stash_name}'
+    output = run_git_command(git_command)
+
+    print(output)
+
+
+def stash_checkout(branch):
+    if branch == '' or branch == None:
+        print('No branch specified')
+        return
+
+    auto_stash()
+
+    git_command = f'git checkout {branch}'
+    output = run_git_command(git_command)
+
+    print(output)
 
 
 def main():
     parser = argparse.ArgumentParser(description='Run git commands')
     parser.add_argument('command', type=str)
-    parser.add_argument('-b', '--branch', type=str, help='The branch to checkout')
+    parser.add_argument('-b', '--branch', type=str,
+                        help='The branch to checkout')
 
     args = parser.parse_args()
 
@@ -24,14 +49,8 @@ def main():
         return
 
     if args.command == 'checkout':
-        if args.branch == '' or args.branch == None:
-            print('No branch specified')
-            return
-
-        git_command = f'git checkout {args.branch}'
-        output = run_git_command(git_command)
-
-        print(output)
+        stash_checkout(args.branch)
+        return
     else:
         print('Invalid command')
         return
